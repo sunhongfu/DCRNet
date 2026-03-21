@@ -1,0 +1,12 @@
+# DCRNet configuration
+# Run: python run.py --config config.yaml
+
+# --- Required ---
+input: data.mat           # .mat file from Save_Input_Data_For_DCRNet.m
+
+# --- Optional ---
+checkpoint: null          # path to .pth checkpoint (null = auto-download DCRNet_AF4.pth)
+                          # e.g. checkpoint: checkpoints/DCRNet_AF8_new.pth
+
+# --- Output ---
+output: ./dcrnet_output
