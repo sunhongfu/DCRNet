@@ -27,6 +27,30 @@ for _d in [_SINGLE_CH_DIR, _MODEL_DIR]:
 from DCRNet import DCRNet  # noqa: E402
 
 
+# ---------------------------------------------------------------------------
+# Auto-download checkpoints from GitHub Releases if not present locally
+# ---------------------------------------------------------------------------
+_CKPT_BASE = (
+    "https://github.com/sunhongfu/DCRNet/releases/download/v1.0-demo"
+)
+_CHECKPOINTS = {
+    "DCRNet_AF4.pth": f"{_CKPT_BASE}/DCRNet_AF4.pth",
+    "DCRNet_AF8_new.pth": f"{_CKPT_BASE}/DCRNet_AF8_new.pth",
+}
+
+
+def _ensure_checkpoints():
+    """Download missing checkpoint files from GitHub Releases."""
+    import urllib.request
+    os.makedirs(CHECKPOINTS_DIR, exist_ok=True)
+    for filename, url in _CHECKPOINTS.items():
+        dest = os.path.join(CHECKPOINTS_DIR, filename)
+        if not os.path.exists(dest):
+            print(f"Downloading checkpoint {filename} …")
+            urllib.request.urlretrieve(url, dest)
+            print(f"  Saved to {dest}")
+
+
 _model_cache: dict = {}
 
 
@@ -83,8 +107,10 @@ def run_dcrnet(
         output_dir = tempfile.mkdtemp(prefix="dcrnet_")
     os.makedirs(output_dir, exist_ok=True)
 
+    _ensure_checkpoints()
+
     if checkpoint_path is None:
-        checkpoint_path = os.path.join(CHECKPOINTS_DIR, "DCRNet_single_channel.pth")
+        checkpoint_path = os.path.join(CHECKPOINTS_DIR, "DCRNet_AF4.pth")
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     _log(0.0, f"Device: {device}")
